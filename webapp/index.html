@@ -20,6 +20,17 @@ const products = [
   { id: 2, name: 'Полуфабрикат', price: 150 }
 ];
 const cart = {};
+function loadCart() {
+  const saved = localStorage.getItem('cart');
+  if (saved) {
+    Object.assign(cart, JSON.parse(saved));
+  }
+}
+
+function saveCart() {
+  localStorage.setItem('cart', JSON.stringify(cart));
+}
+
 function render() {
   const container = document.getElementById('products');
   container.innerHTML = '';
@@ -36,12 +47,20 @@ function render() {
 }
 function add(id) {
   cart[id] = (cart[id] || 0) + 1;
+  saveCart();
   render();
 }
 function confirmOrder() {
   const data = Object.keys(cart).map(id => ({ id, qty: cart[id] }));
-  alert('Заказ подтверждён: ' + JSON.stringify(data));
+  if (window.Telegram && window.Telegram.WebApp) {
+    window.Telegram.WebApp.sendData(JSON.stringify(data));
+    window.Telegram.WebApp.close();
+  } else {
+    alert('Telegram WebApp недоступен');
+  }
+  localStorage.removeItem('cart');
 }
+loadCart();
 render();
 </script>
 </body>
