@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Мини-магазин</title>
+<style>
+body { font-family: Arial, sans-serif; padding: 20px; }
+.product { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
+.cart { margin-top: 20px; }
+</style>
+</head>
+<body>
+<h1>Витрина</h1>
+<div id="products"></div>
+<div class="cart" id="cart"></div>
+<button onclick="confirmOrder()">Подтвердить заказ</button>
+<script>
+const products = [
+  { id: 1, name: 'Мясо', price: 200 },
+  { id: 2, name: 'Полуфабрикат', price: 150 }
+];
+const cart = {};
+function render() {
+  const container = document.getElementById('products');
+  container.innerHTML = '';
+  products.forEach(p => {
+    const el = document.createElement('div');
+    el.className = 'product';
+    el.innerHTML = `<strong>${p.name}</strong> - ${p.price} руб. ` +
+                   `<button onclick="add(${p.id})">Добавить</button>`;
+    container.appendChild(el);
+  });
+  const cartEl = document.getElementById('cart');
+  cartEl.innerHTML = '<h2>Корзина</h2>' +
+    Object.keys(cart).map(id => `${products.find(p => p.id == id).name}: ${cart[id]}`).join('<br>');
+}
+function add(id) {
+  cart[id] = (cart[id] || 0) + 1;
+  render();
+}
+function confirmOrder() {
+  const data = Object.keys(cart).map(id => ({ id, qty: cart[id] }));
+  alert('Заказ подтверждён: ' + JSON.stringify(data));
+}
+render();
+</script>
+</body>
+</html>
